@@ -1,0 +1,11 @@
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { RegisterGatewayUserDto } from './dtos/register-gateway-user.dto';
+export declare class GatewayService {
+    private readonly httpService;
+    private readonly configService;
+    private readonly baseUrl;
+    constructor(httpService: HttpService, configService: ConfigService);
+    registerUser(data: RegisterGatewayUserDto): Promise<any>;
+    login(document: string, password: string): Promise<any>;
+}

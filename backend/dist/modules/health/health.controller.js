@@ -12,10 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HealthController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
+const typeorm_1 = require("typeorm");
 let HealthController = class HealthController {
+    dataSource;
+    constructor(dataSource) {
+        this.dataSource = dataSource;
+    }
     check() {
         return {
             status: 'ok',
+            database: this.dataSource.isInitialized
+                ? 'connected'
+                : 'disconnected',
         };
     }
 };
@@ -28,6 +36,7 @@ __decorate([
 ], HealthController.prototype, "check", null);
 exports.HealthController = HealthController = __decorate([
     (0, swagger_1.ApiTags)('Health'),
-    (0, common_1.Controller)('health')
+    (0, common_1.Controller)('health'),
+    __metadata("design:paramtypes", [typeorm_1.DataSource])
 ], HealthController);
 //# sourceMappingURL=health.controller.js.map
