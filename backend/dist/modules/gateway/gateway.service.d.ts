@@ -21,4 +21,16 @@ export declare class GatewayService {
         payerDocument: string;
         externalReference: string;
     }): Promise<any>;
+    createCardPayment(accessToken: string, data: {
+        amount: number;
+        description: string;
+        externalReference: string;
+        cardNumber: string;
+        cardHolder: string;
+        expiryMonth: string;
+        expiryYear: string;
+        cvv: string;
+        installments: number;
+        feePercent: number;
+    }): Promise<any>;
 }

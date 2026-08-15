@@ -98,6 +98,23 @@ let GatewayService = class GatewayService {
         }));
         return response.data;
     }
+    async createCardPayment(accessToken, data) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.baseUrl}/payments/card`, data, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }));
+            return response.data;
+        }
+        catch (error) {
+            const axiosError = error;
+            const status = axiosError.response?.status ?? 502;
+            const message = axiosError.response?.data?.message ??
+                'Erro ao processar pagamento com cartão';
+            throw new common_1.HttpException(message, status);
+        }
+    }
 };
 exports.GatewayService = GatewayService;
 exports.GatewayService = GatewayService = __decorate([

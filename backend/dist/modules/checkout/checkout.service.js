@@ -71,6 +71,54 @@ let CheckoutService = class CheckoutService {
             txid: savedCheckout.txid,
         };
     }
+    async createCardCheckout(userId, dto) {
+        const gatewayAccount = await this.gatewayAccountsService.findByUserId(userId);
+        if (!gatewayAccount) {
+            throw new common_1.NotFoundException('Conta do gateway não encontrada');
+        }
+        const feesResponse = await this.gatewayService.getFees(dto.brand);
+        const selectedFee = feesResponse.fees.find((fee) => fee.installments === dto.installments);
+        if (!selectedFee) {
+            throw new common_1.BadRequestException('Taxa não encontrada para a quantidade de parcelas informada');
+        }
+        const externalReference = `CHECKOUT-${(0, crypto_1.randomUUID)()}`;
+        const checkout = this.checkoutRepository.create({
+            userId,
+            paymentMethod: 'CARD',
+            amount: dto.amount,
+            externalReference,
+            status: 'PENDING',
+            installments: dto.installments,
+            feePercent: selectedFee.feePercent,
+        });
+        const savedCheckout = await this.checkoutRepository.save(checkout);
+        const gatewayResponse = await this.gatewayService.createCardPayment(gatewayAccount.accessToken, {
+            amount: dto.amount,
+            description: dto.description,
+            externalReference,
+            cardNumber: dto.cardNumber,
+            cardHolder: dto.cardHolder,
+            expiryMonth: dto.expiryMonth,
+            expiryYear: dto.expiryYear,
+            cvv: dto.cvv,
+            installments: dto.installments,
+            feePercent: selectedFee.feePercent,
+        });
+        savedCheckout.gatewayPaymentId =
+            gatewayResponse.id;
+        if (gatewayResponse.status) {
+            savedCheckout.status =
+                gatewayResponse.status;
+        }
+        await this.checkoutRepository.save(savedCheckout);
+        return {
+            checkoutId: savedCheckout.id,
+            externalReference: savedCheckout.externalReference,
+            status: savedCheckout.status,
+            installments: savedCheckout.installments,
+            feePercent: Number(savedCheckout.feePercent),
+        };
+    }
 };
 exports.CheckoutService = CheckoutService;
 exports.CheckoutService = CheckoutService = __decorate([

@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const checkout_service_1 = require("./checkout.service");
 const create_pix_checkout_dto_1 = require("./dtos/create-pix-checkout.dto");
+const create_card_checkout_dto_1 = require("./dtos/create-card-checkout.dto");
 let CheckoutController = class CheckoutController {
     checkoutService;
     constructor(checkoutService) {
@@ -25,6 +26,9 @@ let CheckoutController = class CheckoutController {
     }
     createPix(request, dto) {
         return this.checkoutService.createPixCheckout(request.user.userId, dto);
+    }
+    createCard(request, dto) {
+        return this.checkoutService.createCardCheckout(request.user.userId, dto);
     }
 };
 exports.CheckoutController = CheckoutController;
@@ -40,6 +44,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, create_pix_checkout_dto_1.CreatePixCheckoutDto]),
     __metadata("design:returntype", void 0)
 ], CheckoutController.prototype, "createPix", null);
+__decorate([
+    (0, common_1.Post)('card'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Criar checkout com cartão',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, create_card_checkout_dto_1.CreateCardCheckoutDto]),
+    __metadata("design:returntype", void 0)
+], CheckoutController.prototype, "createCard", null);
 exports.CheckoutController = CheckoutController = __decorate([
     (0, swagger_1.ApiTags)('Checkout'),
     (0, swagger_1.ApiBearerAuth)(),

@@ -1,6 +1,7 @@
 import {
-  Injectable,
-  NotFoundException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,84 +12,172 @@ import { GatewayAccountsService } from '../gateway-accounts/gateway-accounts.ser
 
 import { CheckoutLink } from './entities/checkout-link.entity';
 import { CreatePixCheckoutDto } from './dtos/create-pix-checkout.dto';
+import { CreateCardCheckoutDto } from './dtos/create-card-checkout.dto';
 
 @Injectable()
 export class CheckoutService {
-  constructor(
-    @InjectRepository(CheckoutLink)
-    private readonly checkoutRepository: Repository<CheckoutLink>,
+    constructor(
+        @InjectRepository(CheckoutLink)
+        private readonly checkoutRepository: Repository<CheckoutLink>,
 
-    private readonly gatewayService: GatewayService,
-    private readonly gatewayAccountsService: GatewayAccountsService,
-  ) {}
+        private readonly gatewayService: GatewayService,
+        private readonly gatewayAccountsService: GatewayAccountsService,
+    ) { }
 
-  async createPixCheckout(
-    userId: string,
-    dto: CreatePixCheckoutDto,
-  ) {
-    const gatewayAccount =
-      await this.gatewayAccountsService.findByUserId(userId);
+    async createPixCheckout(
+        userId: string,
+        dto: CreatePixCheckoutDto,
+    ) {
+        const gatewayAccount =
+            await this.gatewayAccountsService.findByUserId(userId);
 
-    if (!gatewayAccount) {
-      throw new NotFoundException(
-        'Conta do gateway não encontrada',
-      );
+        if (!gatewayAccount) {
+            throw new NotFoundException(
+                'Conta do gateway não encontrada',
+            );
+        }
+
+        const externalReference = `CHECKOUT-${randomUUID()}`;
+
+        const checkout = this.checkoutRepository.create({
+            userId,
+            paymentMethod: 'PIX',
+            amount: dto.amount,
+            externalReference,
+            status: 'PENDING',
+        });
+
+        const savedCheckout =
+            await this.checkoutRepository.save(checkout);
+
+        const gatewayResponse =
+            await this.gatewayService.createPixPayment(
+                gatewayAccount.accessToken,
+                {
+                    amount: dto.amount,
+                    description: dto.description,
+                    payerDocument: dto.payerDocument,
+                    externalReference,
+                },
+            );
+
+        savedCheckout.gatewayPaymentId =
+            gatewayResponse.id;
+
+        savedCheckout.txid =
+            gatewayResponse.txid;
+
+        savedCheckout.qrCodeBase64 =
+            gatewayResponse.qrCodeBase64;
+
+        savedCheckout.emv =
+            gatewayResponse.emv;
+
+        if (gatewayResponse.status) {
+            savedCheckout.status =
+                gatewayResponse.status;
+        }
+
+        await this.checkoutRepository.save(
+            savedCheckout,
+        );
+
+        return {
+            checkoutId: savedCheckout.id,
+            externalReference:
+                savedCheckout.externalReference,
+            status: savedCheckout.status,
+            qrCodeBase64:
+                savedCheckout.qrCodeBase64,
+            emv: savedCheckout.emv,
+            txid: savedCheckout.txid,
+        };
     }
 
-    const externalReference = `CHECKOUT-${randomUUID()}`;
+    async createCardCheckout(
+        userId: string,
+        dto: CreateCardCheckoutDto,
+    ) {
+        const gatewayAccount =
+            await this.gatewayAccountsService.findByUserId(userId);
 
-    const checkout = this.checkoutRepository.create({
-      userId,
-      paymentMethod: 'PIX',
-      amount: dto.amount,
-      externalReference,
-      status: 'PENDING',
-    });
+        if (!gatewayAccount) {
+            throw new NotFoundException(
+                'Conta do gateway não encontrada',
+            );
+        }
 
-    const savedCheckout =
-      await this.checkoutRepository.save(checkout);
+        const feesResponse =
+            await this.gatewayService.getFees(dto.brand);
 
-    const gatewayResponse =
-      await this.gatewayService.createPixPayment(
-        gatewayAccount.accessToken,
-        {
-          amount: dto.amount,
-          description: dto.description,
-          payerDocument: dto.payerDocument,
-          externalReference,
-        },
-      );
+        const selectedFee = feesResponse.fees.find(
+            (fee: {
+                installments: number;
+                feePercent: number;
+            }) => fee.installments === dto.installments,
+        );
 
-    savedCheckout.gatewayPaymentId =
-      gatewayResponse.id;
+        if (!selectedFee) {
+            throw new BadRequestException(
+                'Taxa não encontrada para a quantidade de parcelas informada',
+            );
+        }
 
-    savedCheckout.txid =
-      gatewayResponse.txid;
+        const externalReference =
+            `CHECKOUT-${randomUUID()}`;
 
-    savedCheckout.qrCodeBase64 =
-      gatewayResponse.qrCodeBase64;
+        const checkout =
+            this.checkoutRepository.create({
+                userId,
+                paymentMethod: 'CARD',
+                amount: dto.amount,
+                externalReference,
+                status: 'PENDING',
+                installments: dto.installments,
+                feePercent: selectedFee.feePercent,
+            });
 
-    savedCheckout.emv =
-      gatewayResponse.emv;
+        const savedCheckout =
+            await this.checkoutRepository.save(checkout);
 
-    if (gatewayResponse.status) {
-      savedCheckout.status =
-        gatewayResponse.status;
+        const gatewayResponse =
+            await this.gatewayService.createCardPayment(
+                gatewayAccount.accessToken,
+                {
+                    amount: dto.amount,
+                    description: dto.description,
+                    externalReference,
+                    cardNumber: dto.cardNumber,
+                    cardHolder: dto.cardHolder,
+                    expiryMonth: dto.expiryMonth,
+                    expiryYear: dto.expiryYear,
+                    cvv: dto.cvv,
+                    installments: dto.installments,
+                    feePercent: selectedFee.feePercent,
+                },
+            );
+
+        savedCheckout.gatewayPaymentId =
+            gatewayResponse.id;
+
+        if (gatewayResponse.status) {
+            savedCheckout.status =
+                gatewayResponse.status;
+        }
+
+        await this.checkoutRepository.save(
+            savedCheckout,
+        );
+
+        return {
+            checkoutId: savedCheckout.id,
+            externalReference:
+                savedCheckout.externalReference,
+            status: savedCheckout.status,
+            installments:
+                savedCheckout.installments,
+            feePercent:
+                Number(savedCheckout.feePercent),
+        };
     }
-
-    await this.checkoutRepository.save(
-      savedCheckout,
-    );
-
-    return {
-      checkoutId: savedCheckout.id,
-      externalReference:
-        savedCheckout.externalReference,
-      status: savedCheckout.status,
-      qrCodeBase64:
-        savedCheckout.qrCodeBase64,
-      emv: savedCheckout.emv,
-      txid: savedCheckout.txid,
-    };
-  }
 }

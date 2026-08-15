@@ -11,6 +11,8 @@ import { firstValueFrom } from 'rxjs';
 
 import { RegisterGatewayUserDto } from './dtos/register-gateway-user.dto';
 
+
+
 interface GatewayErrorResponse {
   message?: string;
   error?: string;
@@ -180,5 +182,49 @@ export class GatewayService {
     );
 
     return response.data;
+  }
+
+  async createCardPayment(
+    accessToken: string,
+    data: {
+      amount: number;
+      description: string;
+      externalReference: string;
+      cardNumber: string;
+      cardHolder: string;
+      expiryMonth: string;
+      expiryYear: string;
+      cvv: string;
+      installments: number;
+      feePercent: number;
+    },
+  ) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/payments/card`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        ),
+      );
+
+      return response.data;
+    } catch (error) {
+      const axiosError =
+        error as AxiosError<GatewayErrorResponse>;
+
+      const status =
+        axiosError.response?.status ?? 502;
+
+      const message =
+        axiosError.response?.data?.message ??
+        'Erro ao processar pagamento com cartão';
+
+      throw new HttpException(message, status);
+    }
   }
 }
