@@ -8,6 +8,15 @@ async function bootstrap() {
     rawBody: true,
   });
 
+  app.enableCors({
+    origin: [
+      'http://localhost:5173',
+      'https://seu-frontend-depois.onrender.com',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Lera-Box-Signature'],
+  });
+
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
