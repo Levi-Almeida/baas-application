@@ -24,4 +24,5 @@ export declare class CheckoutService {
         installments: number | undefined;
         feePercent: number;
     }>;
+    updateStatusByExternalReference(externalReference: string, status: string): Promise<CheckoutLink>;
 }

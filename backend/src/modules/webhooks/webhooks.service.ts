@@ -9,13 +9,22 @@ import {
     createHmac,
     timingSafeEqual,
 } from 'crypto';
+import { CheckoutService } from '../checkout/checkout.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { WebhookEvent } from './entities/webhook-event.entity';
+import { Repository } from 'typeorm';
+import { LeraBoxWebhookPayload } from './interfaces/lera-box-webhook-payload.interface';
 
 @Injectable()
 export class WebhooksService {
     constructor(
+        @InjectRepository(WebhookEvent)
+        private readonly webhookEventRepository: Repository<WebhookEvent>,
+
         private readonly gatewayService: GatewayService,
         private readonly gatewayAccountsService: GatewayAccountsService,
         private readonly configService: ConfigService,
+        private readonly checkoutService: CheckoutService,
     ) { }
 
     async configure(userId: string) {
@@ -121,13 +130,39 @@ export class WebhooksService {
     }
 
     async process(
-        event: string,
-        payload: Record<string, unknown>,
+        event: 'PAYMENT_PIX' | 'PAYMENT_CARD' | 'WITHDRAWAL',
+        payload: LeraBoxWebhookPayload,
         signature?: string,
     ) {
-        console.log('WEBHOOK EVENT:', event);
-        console.log('WEBHOOK PAYLOAD:', payload);
-        console.log('WEBHOOK SIGNATURE:', signature);
+        const webhookEvent =
+            this.webhookEventRepository.create({
+                event,
+                externalReference: payload.externalReference,
+                gatewayEntityId: payload.transactionId,
+                payload,
+            });
+
+        await this.webhookEventRepository.save(
+            webhookEvent,
+        );
+
+        if (
+            (event === 'PAYMENT_PIX' ||
+                event === 'PAYMENT_CARD') &&
+            payload.externalReference
+        ) {
+            await this.checkoutService
+                .updateStatusByExternalReference(
+                    payload.externalReference,
+                    payload.status,
+                );
+        }
+
+        webhookEvent.processedAt = new Date();
+
+        await this.webhookEventRepository.save(
+            webhookEvent,
+        );
 
         return {
             received: true,

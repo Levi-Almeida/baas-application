@@ -18,5 +18,6 @@ import { CheckoutLink } from './entities/checkout-link.entity';
   ],
   controllers: [CheckoutController],
   providers: [CheckoutService],
+  exports: [CheckoutService],
 })
 export class CheckoutModule {}

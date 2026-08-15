@@ -15,6 +15,7 @@ const gateway_accounts_module_1 = require("../gateway-accounts/gateway-accounts.
 const webhook_event_entity_1 = require("./entities/webhook-event.entity");
 const webhooks_controller_1 = require("./webhooks.controller");
 const webhooks_service_1 = require("./webhooks.service");
+const checkout_module_1 = require("../checkout/checkout.module");
 let WebhooksModule = class WebhooksModule {
 };
 exports.WebhooksModule = WebhooksModule;
@@ -25,6 +26,7 @@ exports.WebhooksModule = WebhooksModule = __decorate([
             auth_module_1.AuthModule,
             gateway_module_1.GatewayModule,
             gateway_accounts_module_1.GatewayAccountsModule,
+            checkout_module_1.CheckoutModule,
         ],
         controllers: [webhooks_controller_1.WebhooksController],
         providers: [webhooks_service_1.WebhooksService],

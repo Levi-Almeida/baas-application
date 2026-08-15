@@ -180,4 +180,23 @@ export class CheckoutService {
                 Number(savedCheckout.feePercent),
         };
     }
+
+    async updateStatusByExternalReference(
+        externalReference: string,
+        status: string,
+    ) {
+        const checkout = await this.checkoutRepository.findOne({
+            where: { externalReference },
+        });
+
+        if (!checkout) {
+            throw new NotFoundException(
+                'Checkout não encontrado para a referência informada',
+            );
+        }
+
+        checkout.status = status;
+
+        return this.checkoutRepository.save(checkout);
+    }
 }

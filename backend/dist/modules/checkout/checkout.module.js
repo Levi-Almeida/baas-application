@@ -28,6 +28,7 @@ exports.CheckoutModule = CheckoutModule = __decorate([
         ],
         controllers: [checkout_controller_1.CheckoutController],
         providers: [checkout_service_1.CheckoutService],
+        exports: [checkout_service_1.CheckoutService],
     })
 ], CheckoutModule);
 //# sourceMappingURL=checkout.module.js.map

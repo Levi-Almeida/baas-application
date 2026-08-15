@@ -8,6 +8,7 @@ import { GatewayAccountsModule } from '../gateway-accounts/gateway-accounts.modu
 import { WebhookEvent } from './entities/webhook-event.entity';
 import { WebhooksController } from './webhooks.controller';
 import { WebhooksService } from './webhooks.service';
+import { CheckoutModule } from '../checkout/checkout.module';
 
 @Module({
   imports: [
@@ -15,8 +16,9 @@ import { WebhooksService } from './webhooks.service';
     AuthModule,
     GatewayModule,
     GatewayAccountsModule,
+    CheckoutModule,
   ],
   controllers: [WebhooksController],
   providers: [WebhooksService],
 })
-export class WebhooksModule {}
+export class WebhooksModule { }

@@ -14,6 +14,7 @@ import {
 
 import { WebhooksService } from './webhooks.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import * as leraBoxWebhookPayloadInterface from './interfaces/lera-box-webhook-payload.interface';
 
 @ApiTags('Webhooks')
 @Controller('webhooks')
@@ -27,7 +28,7 @@ export class WebhooksController {
         summary: 'Receber webhook de pagamento Pix',
     })
     receivePix(
-        @Body() payload: Record<string, unknown>,
+        @Body() payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload,
         @Headers('x-lera-box-signature')
         signature?: string,
     ) {
@@ -43,7 +44,7 @@ export class WebhooksController {
         summary: 'Receber webhook de pagamento com cartão',
     })
     receiveCard(
-        @Body() payload: Record<string, unknown>,
+        @Body() payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload,
         @Headers('x-lera-box-signature')
         signature?: string,
     ) {
@@ -59,7 +60,7 @@ export class WebhooksController {
         summary: 'Receber webhook de saque',
     })
     receiveWithdrawal(
-        @Body() payload: Record<string, unknown>,
+        @Body() payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload,
         @Headers('x-lera-box-signature')
         signature?: string,
     ) {

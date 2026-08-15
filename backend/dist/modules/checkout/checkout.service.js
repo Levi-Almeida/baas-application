@@ -119,6 +119,16 @@ let CheckoutService = class CheckoutService {
             feePercent: Number(savedCheckout.feePercent),
         };
     }
+    async updateStatusByExternalReference(externalReference, status) {
+        const checkout = await this.checkoutRepository.findOne({
+            where: { externalReference },
+        });
+        if (!checkout) {
+            throw new common_1.NotFoundException('Checkout não encontrado para a referência informada');
+        }
+        checkout.status = status;
+        return this.checkoutRepository.save(checkout);
+    }
 };
 exports.CheckoutService = CheckoutService;
 exports.CheckoutService = CheckoutService = __decorate([

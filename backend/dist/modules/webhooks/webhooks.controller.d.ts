@@ -1,14 +1,15 @@
 import { WebhooksService } from './webhooks.service';
+import * as leraBoxWebhookPayloadInterface from './interfaces/lera-box-webhook-payload.interface';
 export declare class WebhooksController {
     private readonly webhooksService;
     constructor(webhooksService: WebhooksService);
-    receivePix(payload: Record<string, unknown>, signature?: string): Promise<{
+    receivePix(payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload, signature?: string): Promise<{
         received: boolean;
     }>;
-    receiveCard(payload: Record<string, unknown>, signature?: string): Promise<{
+    receiveCard(payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload, signature?: string): Promise<{
         received: boolean;
     }>;
-    receiveWithdrawal(payload: Record<string, unknown>, signature?: string): Promise<{
+    receiveWithdrawal(payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload, signature?: string): Promise<{
         received: boolean;
     }>;
     configure(request: {
