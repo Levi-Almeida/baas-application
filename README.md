@@ -203,7 +203,7 @@ https://baas-application-api.onrender.com/api/health
 ### Frontend
 
 ```text
-ADICIONAR_URL_DO_FRONTEND_APÓS_DEPLOY
+https://baas-application.vercel.app/login
 ```
 
 ## 🔌 Principais endpoints
