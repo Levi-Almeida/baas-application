@@ -14,6 +14,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { WebhookEvent } from './entities/webhook-event.entity';
 import { Repository } from 'typeorm';
 import { LeraBoxWebhookPayload } from './interfaces/lera-box-webhook-payload.interface';
+import { WithdrawalsService } from '../withdrawals/withdrawals.service';
+
+
+import {
+    UnauthorizedException,
+} from '@nestjs/common';
 
 @Injectable()
 export class WebhooksService {
@@ -25,6 +31,7 @@ export class WebhooksService {
         private readonly gatewayAccountsService: GatewayAccountsService,
         private readonly configService: ConfigService,
         private readonly checkoutService: CheckoutService,
+        private readonly withdrawalsService: WithdrawalsService,
     ) { }
 
     async configure(userId: string) {
@@ -87,9 +94,9 @@ export class WebhooksService {
 
 
     private validateSignature(
-        payload: Record<string, unknown>,
+        rawBody: Buffer,
         signature?: string,
-    ) {
+    ): void {
         const secret =
             this.configService.get<string>('WEBHOOK_SECRET');
 
@@ -100,45 +107,93 @@ export class WebhooksService {
         }
 
         if (!signature) {
-            return false;
+            throw new UnauthorizedException(
+                'Assinatura do webhook não informada',
+            );
         }
 
-        const body = JSON.stringify(payload);
+        const expectedSignature = createHmac(
+            'sha256',
+            secret,
+        )
+            .update(rawBody)
+            .digest('hex');
 
-        const expectedSignature =
-            createHmac('sha256', secret)
-                .update(body)
-                .digest('hex');
+        const receivedBuffer = Buffer.from(
+            signature,
+            'utf8',
+        );
 
-        const receivedBuffer =
-            Buffer.from(signature);
-
-        const expectedBuffer =
-            Buffer.from(expectedSignature);
+        const expectedBuffer = Buffer.from(
+            expectedSignature,
+            'utf8',
+        );
 
         if (
             receivedBuffer.length !==
             expectedBuffer.length
         ) {
-            return false;
+            throw new UnauthorizedException(
+                'Assinatura do webhook inválida',
+            );
         }
 
-        return timingSafeEqual(
+        const isValid = timingSafeEqual(
             receivedBuffer,
             expectedBuffer,
         );
+
+        if (!isValid) {
+            throw new UnauthorizedException(
+                'Assinatura do webhook inválida',
+            );
+        }
     }
 
     async process(
-        event: 'PAYMENT_PIX' | 'PAYMENT_CARD' | 'WITHDRAWAL',
+        event:
+            | 'PAYMENT_PIX'
+            | 'PAYMENT_CARD'
+            | 'WITHDRAWAL',
         payload: LeraBoxWebhookPayload,
-        signature?: string,
+        signature: string | undefined,
+        rawBody: Buffer | undefined,
     ) {
+        if (!rawBody) {
+            throw new UnauthorizedException(
+                'Raw body do webhook não disponível',
+            );
+        }
+
+        this.validateSignature(
+            rawBody,
+            signature,
+        );
+
+        if (payload.transactionId) {
+            const existingEvent =
+                await this.webhookEventRepository.findOne({
+                    where: {
+                        gatewayEntityId:
+                            payload.transactionId,
+                    },
+                });
+
+            if (existingEvent) {
+                return {
+                    received: true,
+                    duplicate: true,
+                };
+            }
+        }
+
         const webhookEvent =
             this.webhookEventRepository.create({
                 event,
-                externalReference: payload.externalReference,
-                gatewayEntityId: payload.transactionId,
+                externalReference:
+                    payload.externalReference,
+                gatewayEntityId:
+                    payload.transactionId,
                 payload,
             });
 
@@ -158,6 +213,17 @@ export class WebhooksService {
                 );
         }
 
+        if (
+            event === 'WITHDRAWAL' &&
+            payload.externalReference
+        ) {
+            await this.withdrawalsService
+                .updateStatusByExternalReference(
+                    payload.externalReference,
+                    payload.status,
+                );
+        }
+
         webhookEvent.processedAt = new Date();
 
         await this.webhookEventRepository.save(
@@ -168,4 +234,5 @@ export class WebhooksService {
             received: true,
         };
     }
+
 }

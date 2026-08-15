@@ -11,10 +11,18 @@ import {
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
+import type {
+    RawBodyRequest,
+} from '@nestjs/common';
+
+import {
+    Request,
+} from 'express';
 
 import { WebhooksService } from './webhooks.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import * as leraBoxWebhookPayloadInterface from './interfaces/lera-box-webhook-payload.interface';
+import type { LeraBoxWebhookPayload } from './interfaces/lera-box-webhook-payload.interface';
 
 @ApiTags('Webhooks')
 @Controller('webhooks')
@@ -28,7 +36,10 @@ export class WebhooksController {
         summary: 'Receber webhook de pagamento Pix',
     })
     receivePix(
-        @Body() payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload,
+        @Req()
+        request: RawBodyRequest<Request>,
+        @Body()
+        payload: LeraBoxWebhookPayload,
         @Headers('x-lera-box-signature')
         signature?: string,
     ) {
@@ -36,6 +47,7 @@ export class WebhooksController {
             'PAYMENT_PIX',
             payload,
             signature,
+            request.rawBody,
         );
     }
 
@@ -44,7 +56,10 @@ export class WebhooksController {
         summary: 'Receber webhook de pagamento com cartão',
     })
     receiveCard(
-        @Body() payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload,
+        @Req()
+        request: RawBodyRequest<Request>,
+        @Body()
+        payload: LeraBoxWebhookPayload,
         @Headers('x-lera-box-signature')
         signature?: string,
     ) {
@@ -52,6 +67,7 @@ export class WebhooksController {
             'PAYMENT_CARD',
             payload,
             signature,
+            request.rawBody,
         );
     }
 
@@ -60,7 +76,10 @@ export class WebhooksController {
         summary: 'Receber webhook de saque',
     })
     receiveWithdrawal(
-        @Body() payload: leraBoxWebhookPayloadInterface.LeraBoxWebhookPayload,
+        @Req()
+        request: RawBodyRequest<Request>,
+        @Body()
+        payload: LeraBoxWebhookPayload,
         @Headers('x-lera-box-signature')
         signature?: string,
     ) {
@@ -68,9 +87,9 @@ export class WebhooksController {
             'WITHDRAWAL',
             payload,
             signature,
+            request.rawBody,
         );
     }
-
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)

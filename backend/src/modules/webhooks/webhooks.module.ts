@@ -9,6 +9,7 @@ import { WebhookEvent } from './entities/webhook-event.entity';
 import { WebhooksController } from './webhooks.controller';
 import { WebhooksService } from './webhooks.service';
 import { CheckoutModule } from '../checkout/checkout.module';
+import { WithdrawalsModule } from '../withdrawals/withdrawals.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CheckoutModule } from '../checkout/checkout.module';
     GatewayModule,
     GatewayAccountsModule,
     CheckoutModule,
+    WithdrawalsModule,
   ],
   controllers: [WebhooksController],
   providers: [WebhooksService],
