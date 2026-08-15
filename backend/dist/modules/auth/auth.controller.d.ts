@@ -9,7 +9,7 @@ export declare class AuthController {
         gateway: any;
     }>;
     login(loginDto: LoginDto): Promise<{
-        message: string;
+        accessToken: string;
         user: {
             id: string;
             name: string;

@@ -6,6 +6,9 @@ import { GatewayAccountsService } from '../gateway-accounts/gateway-accounts.ser
 
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
+import { JwtService } from '@nestjs/jwt';
+
+
 
 @Injectable()
 export class AuthService {
@@ -13,7 +16,8 @@ export class AuthService {
     private readonly gatewayService: GatewayService,
     private readonly usersService: UsersService,
     private readonly gatewayAccountsService: GatewayAccountsService,
-  ) {}
+    private readonly jwtService: JwtService
+  ) { }
 
   async register(data: RegisterDto) {
     const gatewayResponse =
@@ -76,8 +80,14 @@ export class AuthService {
       );
     }
 
+    const accessToken =
+      await this.jwtService.signAsync({
+        sub: user.id,
+        email: user.email,
+      });
+      
     return {
-      message: 'Login realizado com sucesso',
+      accessToken,
       user: {
         id: user.id,
         name: user.name,

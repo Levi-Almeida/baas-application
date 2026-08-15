@@ -102,4 +102,21 @@ export class GatewayService {
 
 
   }
+
+  async getWallet(accessToken: string) {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this.baseUrl}/wallet`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+
+    return response.data;
+  }
+
+  
 }

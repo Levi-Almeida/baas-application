@@ -65,6 +65,14 @@ let GatewayService = class GatewayService {
             throw new common_1.BadGatewayException('Não foi possível comunicar com o gateway');
         }
     }
+    async getWallet(accessToken) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/wallet`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }));
+        return response.data;
+    }
 };
 exports.GatewayService = GatewayService;
 exports.GatewayService = GatewayService = __decorate([

@@ -9,7 +9,7 @@ export class GatewayAccountsService {
   constructor(
     @InjectRepository(GatewayAccount)
     private readonly repository: Repository<GatewayAccount>,
-  ) {}
+  ) { }
 
   async findByUserId(userId: string) {
     return this.repository.findOne({
@@ -39,4 +39,5 @@ export class GatewayAccountsService {
       tokenType,
     });
   }
+
 }

@@ -8,4 +8,5 @@ export declare class GatewayService {
     constructor(httpService: HttpService, configService: ConfigService);
     registerUser(data: RegisterGatewayUserDto): Promise<any>;
     login(document: string, password: string): Promise<any>;
+    getWallet(accessToken: string): Promise<any>;
 }

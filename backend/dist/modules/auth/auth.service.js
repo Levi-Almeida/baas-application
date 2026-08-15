@@ -14,14 +14,17 @@ const common_1 = require("@nestjs/common");
 const gateway_service_1 = require("../gateway/gateway.service");
 const users_service_1 = require("../users/users.service");
 const gateway_accounts_service_1 = require("../gateway-accounts/gateway-accounts.service");
+const jwt_1 = require("@nestjs/jwt");
 let AuthService = class AuthService {
     gatewayService;
     usersService;
     gatewayAccountsService;
-    constructor(gatewayService, usersService, gatewayAccountsService) {
+    jwtService;
+    constructor(gatewayService, usersService, gatewayAccountsService, jwtService) {
         this.gatewayService = gatewayService;
         this.usersService = usersService;
         this.gatewayAccountsService = gatewayAccountsService;
+        this.jwtService = jwtService;
     }
     async register(data) {
         const gatewayResponse = await this.gatewayService.registerUser(data);
@@ -57,8 +60,12 @@ let AuthService = class AuthService {
         else {
             await this.gatewayAccountsService.updateToken(existingGatewayAccount.id, gatewayResponse.access_token, gatewayResponse.token_type);
         }
+        const accessToken = await this.jwtService.signAsync({
+            sub: user.id,
+            email: user.email,
+        });
         return {
-            message: 'Login realizado com sucesso',
+            accessToken,
             user: {
                 id: user.id,
                 name: user.name,
@@ -75,6 +82,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [gateway_service_1.GatewayService,
         users_service_1.UsersService,
-        gateway_accounts_service_1.GatewayAccountsService])
+        gateway_accounts_service_1.GatewayAccountsService,
+        jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map
