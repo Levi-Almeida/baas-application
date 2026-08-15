@@ -25,6 +25,13 @@ let WalletController = class WalletController {
     getWallet(request) {
         return this.walletService.getWallet(request.user.userId);
     }
+    getTransactions(request, status, type, limit) {
+        return this.walletService.getTransactions(request.user.userId, {
+            status,
+            type,
+            limit: limit ? Number(limit) : undefined,
+        });
+    }
 };
 exports.WalletController = WalletController;
 __decorate([
@@ -38,6 +45,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], WalletController.prototype, "getWallet", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('transactions'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Consultar extrato da carteira',
+    }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('type')),
+    __param(3, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, String, String]),
+    __metadata("design:returntype", void 0)
+], WalletController.prototype, "getTransactions", null);
 exports.WalletController = WalletController = __decorate([
     (0, swagger_1.ApiTags)('Wallet'),
     (0, swagger_1.ApiBearerAuth)(),

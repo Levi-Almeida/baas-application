@@ -9,4 +9,10 @@ export declare class GatewayService {
     registerUser(data: RegisterGatewayUserDto): Promise<any>;
     login(document: string, password: string): Promise<any>;
     getWallet(accessToken: string): Promise<any>;
+    getWalletTransactions(accessToken: string, filters?: {
+        status?: string;
+        type?: string;
+        limit?: number;
+    }): Promise<any>;
+    getFees(brand?: 'VISA' | 'MASTERCARD' | 'ELO'): Promise<any>;
 }

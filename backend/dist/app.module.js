@@ -18,6 +18,7 @@ const gateway_accounts_module_1 = require("./modules/gateway-accounts/gateway-ac
 const auth_controller_1 = require("./modules/auth/auth.controller");
 const auth_service_1 = require("./modules/auth/auth.service");
 const wallet_module_1 = require("./modules/wallet/wallet.module");
+const fees_module_1 = require("./modules/fees/fees.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -46,6 +47,7 @@ exports.AppModule = AppModule = __decorate([
             users_module_1.UsersModule,
             gateway_accounts_module_1.GatewayAccountsModule,
             wallet_module_1.WalletModule,
+            fees_module_1.FeesModule,
         ],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],

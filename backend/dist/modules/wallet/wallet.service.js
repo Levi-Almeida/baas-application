@@ -27,6 +27,13 @@ let WalletService = class WalletService {
         }
         return this.gatewayService.getWallet(gatewayAccount.accessToken);
     }
+    async getTransactions(userId, filters) {
+        const gatewayAccount = await this.gatewayAccountsService.findByUserId(userId);
+        if (!gatewayAccount) {
+            throw new common_1.NotFoundException('Conta do gateway não encontrada');
+        }
+        return this.gatewayService.getWalletTransactions(gatewayAccount.accessToken, filters);
+    }
 };
 exports.WalletService = WalletService;
 exports.WalletService = WalletService = __decorate([

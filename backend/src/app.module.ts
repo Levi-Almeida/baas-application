@@ -10,6 +10,7 @@ import { GatewayAccountsModule } from './modules/gateway-accounts/gateway-accoun
 import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { FeesModule } from './modules/fees/fees.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
     UsersModule,
     GatewayAccountsModule,
     WalletModule,
+    FeesModule,
   ],
 
   controllers: [AuthController],

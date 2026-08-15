@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -37,6 +38,33 @@ export class WalletController {
   ) {
     return this.walletService.getWallet(
       request.user.userId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('transactions')
+  @ApiOperation({
+    summary: 'Consultar extrato da carteira',
+  })
+  getTransactions(
+    @Req()
+    request: {
+      user: {
+        userId: string;
+        email: string;
+      };
+    },
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.walletService.getTransactions(
+      request.user.userId,
+      {
+        status,
+        type,
+        limit: limit ? Number(limit) : undefined,
+      },
     );
   }
 }

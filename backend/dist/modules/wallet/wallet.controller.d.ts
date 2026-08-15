@@ -8,4 +8,10 @@ export declare class WalletController {
             email: string;
         };
     }): Promise<any>;
+    getTransactions(request: {
+        user: {
+            userId: string;
+            email: string;
+        };
+    }, status?: string, type?: string, limit?: string): Promise<any>;
 }

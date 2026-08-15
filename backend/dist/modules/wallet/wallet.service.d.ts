@@ -5,4 +5,9 @@ export declare class WalletService {
     private readonly gatewayAccountsService;
     constructor(gatewayService: GatewayService, gatewayAccountsService: GatewayAccountsService);
     getWallet(userId: string): Promise<any>;
+    getTransactions(userId: string, filters?: {
+        status?: string;
+        type?: string;
+        limit?: number;
+    }): Promise<any>;
 }

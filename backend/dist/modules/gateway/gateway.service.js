@@ -73,6 +73,23 @@ let GatewayService = class GatewayService {
         }));
         return response.data;
     }
+    async getWalletTransactions(accessToken, filters) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/wallet/transactions`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: filters,
+        }));
+        return response.data;
+    }
+    async getFees(brand) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/fees`, {
+            params: brand
+                ? { brand }
+                : undefined,
+        }));
+        return response.data;
+    }
 };
 exports.GatewayService = GatewayService;
 exports.GatewayService = GatewayService = __decorate([

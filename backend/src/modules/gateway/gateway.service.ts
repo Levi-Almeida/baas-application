@@ -118,5 +118,43 @@ export class GatewayService {
     return response.data;
   }
 
-  
+  async getWalletTransactions(
+    accessToken: string,
+    filters?: {
+      status?: string;
+      type?: string;
+      limit?: number;
+    },
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this.baseUrl}/wallet/transactions`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: filters,
+        },
+      ),
+    );
+
+    return response.data;
+  }
+
+  async getFees(
+    brand?: 'VISA' | 'MASTERCARD' | 'ELO',
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this.baseUrl}/fees`,
+        {
+          params: brand
+            ? { brand }
+            : undefined,
+        },
+      ),
+    );
+
+    return response.data;
+  }
 }
