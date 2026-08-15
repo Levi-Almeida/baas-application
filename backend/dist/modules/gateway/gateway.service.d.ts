@@ -15,4 +15,10 @@ export declare class GatewayService {
         limit?: number;
     }): Promise<any>;
     getFees(brand?: 'VISA' | 'MASTERCARD' | 'ELO'): Promise<any>;
+    createPixPayment(accessToken: string, data: {
+        amount: number;
+        description: string;
+        payerDocument: string;
+        externalReference: string;
+    }): Promise<any>;
 }

@@ -90,6 +90,14 @@ let GatewayService = class GatewayService {
         }));
         return response.data;
     }
+    async createPixPayment(accessToken, data) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.baseUrl}/payments/pix`, data, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }));
+        return response.data;
+    }
 };
 exports.GatewayService = GatewayService;
 exports.GatewayService = GatewayService = __decorate([

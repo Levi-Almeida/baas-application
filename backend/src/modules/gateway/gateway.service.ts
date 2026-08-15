@@ -157,4 +157,28 @@ export class GatewayService {
 
     return response.data;
   }
+
+  async createPixPayment(
+    accessToken: string,
+    data: {
+      amount: number;
+      description: string;
+      payerDocument: string;
+      externalReference: string;
+    },
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.post(
+        `${this.baseUrl}/payments/pix`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+
+    return response.data;
+  }
 }

@@ -11,6 +11,7 @@ import { AuthController } from './modules/auth/auth.controller';
 import { AuthService } from './modules/auth/auth.service';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { FeesModule } from './modules/fees/fees.module';
+import { CheckoutModule } from './modules/checkout/checkout.module';
 
 
 @Module({
@@ -40,6 +41,7 @@ import { FeesModule } from './modules/fees/fees.module';
     GatewayAccountsModule,
     WalletModule,
     FeesModule,
+    CheckoutModule,
   ],
 
   controllers: [AuthController],

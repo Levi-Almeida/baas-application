@@ -19,6 +19,7 @@ const auth_controller_1 = require("./modules/auth/auth.controller");
 const auth_service_1 = require("./modules/auth/auth.service");
 const wallet_module_1 = require("./modules/wallet/wallet.module");
 const fees_module_1 = require("./modules/fees/fees.module");
+const checkout_module_1 = require("./modules/checkout/checkout.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -48,6 +49,7 @@ exports.AppModule = AppModule = __decorate([
             gateway_accounts_module_1.GatewayAccountsModule,
             wallet_module_1.WalletModule,
             fees_module_1.FeesModule,
+            checkout_module_1.CheckoutModule,
         ],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],
