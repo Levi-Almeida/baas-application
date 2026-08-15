@@ -33,4 +33,18 @@ export declare class GatewayService {
         installments: number;
         feePercent: number;
     }): Promise<any>;
+    createWithdrawal(accessToken: string, data: {
+        amount: number;
+        pixKey: string;
+        description: string;
+        externalReference: string;
+        document: string;
+    }): Promise<any>;
+    getWithdrawal(accessToken: string, withdrawalId: string): Promise<any>;
+    getWebhooks(accessToken: string): Promise<any>;
+    registerWebhook(accessToken: string, data: {
+        event: 'PAYMENT_PIX' | 'PAYMENT_CARD' | 'WITHDRAWAL';
+        url: string;
+        secret: string;
+    }): Promise<any>;
 }

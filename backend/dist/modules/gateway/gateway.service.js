@@ -115,6 +115,38 @@ let GatewayService = class GatewayService {
             throw new common_1.HttpException(message, status);
         }
     }
+    async createWithdrawal(accessToken, data) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.baseUrl}/withdrawals`, data, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }));
+        return response.data;
+    }
+    async getWithdrawal(accessToken, withdrawalId) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/withdrawals/${withdrawalId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }));
+        return response.data;
+    }
+    async getWebhooks(accessToken) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.get(`${this.baseUrl}/webhooks`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }));
+        return response.data;
+    }
+    async registerWebhook(accessToken, data) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.baseUrl}/webhooks`, data, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        }));
+        return response.data;
+    }
 };
 exports.GatewayService = GatewayService;
 exports.GatewayService = GatewayService = __decorate([

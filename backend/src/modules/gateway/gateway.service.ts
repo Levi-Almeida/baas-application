@@ -227,4 +227,85 @@ export class GatewayService {
       throw new HttpException(message, status);
     }
   }
+
+  async createWithdrawal(
+    accessToken: string,
+    data: {
+      amount: number;
+      pixKey: string;
+      description: string;
+      externalReference: string;
+      document: string;
+    },
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.post(
+        `${this.baseUrl}/withdrawals`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+
+    return response.data;
+  }
+
+  async getWithdrawal(
+    accessToken: string,
+    withdrawalId: string,
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this.baseUrl}/withdrawals/${withdrawalId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+
+    return response.data;
+  }
+
+  async getWebhooks(accessToken: string) {
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this.baseUrl}/webhooks`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+
+    return response.data;
+  }
+
+  async registerWebhook(
+    accessToken: string,
+    data: {
+      event: 'PAYMENT_PIX' | 'PAYMENT_CARD' | 'WITHDRAWAL';
+      url: string;
+      secret: string;
+    },
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.post(
+        `${this.baseUrl}/webhooks`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    );
+
+    return response.data;
+  }
 }

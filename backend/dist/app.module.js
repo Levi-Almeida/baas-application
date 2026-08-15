@@ -20,6 +20,8 @@ const auth_service_1 = require("./modules/auth/auth.service");
 const wallet_module_1 = require("./modules/wallet/wallet.module");
 const fees_module_1 = require("./modules/fees/fees.module");
 const checkout_module_1 = require("./modules/checkout/checkout.module");
+const withdrawals_module_1 = require("./modules/withdrawals/withdrawals.module");
+const webhooks_module_1 = require("./modules/webhooks/webhooks.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -50,6 +52,8 @@ exports.AppModule = AppModule = __decorate([
             wallet_module_1.WalletModule,
             fees_module_1.FeesModule,
             checkout_module_1.CheckoutModule,
+            withdrawals_module_1.WithdrawalsModule,
+            webhooks_module_1.WebhooksModule,
         ],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],

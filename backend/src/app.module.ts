@@ -12,6 +12,8 @@ import { AuthService } from './modules/auth/auth.service';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { FeesModule } from './modules/fees/fees.module';
 import { CheckoutModule } from './modules/checkout/checkout.module';
+import { WithdrawalsModule } from './modules/withdrawals/withdrawals.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 
 
 @Module({
@@ -42,6 +44,8 @@ import { CheckoutModule } from './modules/checkout/checkout.module';
     WalletModule,
     FeesModule,
     CheckoutModule,
+    WithdrawalsModule,
+    WebhooksModule,
   ],
 
   controllers: [AuthController],
