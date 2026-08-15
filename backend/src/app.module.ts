@@ -7,7 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { GatewayAccountsModule } from './modules/gateway-accounts/gateway-accounts.module';
 
-
+import { AuthController } from './modules/auth/auth.controller';
+import { AuthService } from './modules/auth/auth.service';
 
 
 @Module({
@@ -37,6 +38,7 @@ import { GatewayAccountsModule } from './modules/gateway-accounts/gateway-accoun
     GatewayAccountsModule,
   ],
 
-
+  controllers: [AuthController],
+  providers: [AuthService],
 })
 export class AppModule { }

@@ -11,12 +11,14 @@ const common_1 = require("@nestjs/common");
 const gateway_module_1 = require("../gateway/gateway.module");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
+const users_module_1 = require("../users/users.module");
+const gateway_accounts_module_1 = require("../gateway-accounts/gateway-accounts.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
-        imports: [gateway_module_1.GatewayModule],
+        imports: [gateway_module_1.GatewayModule, users_module_1.UsersModule, gateway_accounts_module_1.GatewayAccountsModule],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],
     })

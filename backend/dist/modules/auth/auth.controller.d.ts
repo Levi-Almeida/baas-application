@@ -8,5 +8,15 @@ export declare class AuthController {
         message: string;
         gateway: any;
     }>;
-    login(loginDto: LoginDto): Promise<any>;
+    login(loginDto: LoginDto): Promise<{
+        message: string;
+        user: {
+            id: string;
+            name: string;
+            email: string;
+            document: string;
+            personType: "PF" | "PJ";
+            tradingName: string | undefined;
+        };
+    }>;
 }
